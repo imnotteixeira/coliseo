@@ -1,3 +1,5 @@
+import { FightMove, FightMoveFactory } from "./FightMove";
+
 export type FighterStats = {
     attack: number;
     defence: number;
@@ -6,46 +8,6 @@ export type FighterStats = {
 
 export type FighterState = {
     health: number
-}
-
-export interface FightMove {
-    name: string
-    power: number,
-    source: BaseFighter
-}
-
-interface FightMoveFactory {
-    instatiate: (source: BaseFighter) => FightMove
-}
-
-class PunchImpl implements FightMove {
-    public name = "Punch"
-    public source;
-    public power;
-
-    public constructor(source: BaseFighter) {
-        this.power = source.getStats().attack;
-        this.source = source;
-    }
-}
-
-export const Punch: FightMoveFactory = {
-    instatiate: (source) => new PunchImpl(source)
-}
-
-class BiteImpl implements FightMove {
-    public name = "Bite"
-    public source;
-    public power;
-
-    public constructor(source: BaseFighter) {
-        this.power = source.getStats().attack * 1.3;
-        this.source = source;
-    }
-}
-
-export const Bite: FightMoveFactory = {
-    instatiate: (source) => new BiteImpl(source)
 }
 
 export type Defence = {
@@ -150,9 +112,3 @@ export class FighterCompanion extends BaseFighter {
     // }
 
 }
-
-export class Dog extends FighterCompanion {
-    constructor(name: string, stats: FighterStats) {
-        super(name, stats, [Bite])
-    }
-} 

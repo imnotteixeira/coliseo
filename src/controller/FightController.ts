@@ -1,4 +1,5 @@
-import { BaseFighter, FightMove } from "./fighter";
+import { BaseFighter } from "../model/base/Fighter";
+import { FightMove } from "../model/base/FightMove";
 
 export type Players = {
     0: BaseFighter
@@ -7,20 +8,30 @@ export type Players = {
 
 type PlayerId = 0 | 1;
 
-export interface IFight {
+interface IFight {
     currentPlayer: PlayerId
     players: Players,
 
     tick: () => BaseFighter | undefined
 }
 
-export class Fight implements IFight {
+class Fight implements IFight {
     currentPlayer: PlayerId = 0;
 
     public players: Players;
 
     constructor(players: Players) {
         this.players = players
+    }
+
+    public start(): BaseFighter {
+
+        let matchWinner = undefined;
+        while(!matchWinner) {
+            matchWinner = this.tick();
+        }
+
+        return matchWinner;
     }
 
     public tick(): BaseFighter | undefined {
@@ -51,4 +62,11 @@ export class Fight implements IFight {
         return ((this.currentPlayer + 1) % 2) as PlayerId
     }
 
+}
+
+export class FightController {
+    
+    public createFight(players: Players) {
+        return new Fight(players)
+    }
 }
