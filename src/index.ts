@@ -11,7 +11,8 @@ const players: Players = {
 const fightController = new FightController();
 const fight = fightController.createFight(players)
 
-const matchWinner = fight.start();
+const { winner } = fight.start();
 
+fight.print();
 
-console.log(`Congratulations, ${matchWinner.name}!`)
+console.log(`Congratulations, ${winner.name}!`)

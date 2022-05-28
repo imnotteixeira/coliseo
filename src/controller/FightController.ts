@@ -1,4 +1,4 @@
-import { BaseFighter } from "../model/base/Fighter";
+import { BaseFighter, Defence } from "../model/base/Fighter";
 import { FightMove } from "../model/base/FightMove";
 
 export type Players = {
@@ -12,46 +12,74 @@ interface IFight {
     currentPlayer: PlayerId
     players: Players,
 
-    tick: () => BaseFighter | undefined
+    tick: () => FightStepOutcome
+}
+
+export type FightSummary = {
+    winner: BaseFighter,
+    fightHistory: FightMoveTrade[]
+}
+
+type FightStepOutcome = {
+    winner: BaseFighter | undefined,
+    hits: FightMoveTrade[]
+}
+
+type FightMoveTrade = {
+    attack: FightMove,
+    defence: Defence
 }
 
 class Fight implements IFight {
     currentPlayer: PlayerId = 0;
 
     public players: Players;
+    public fightHistory: FightMoveTrade[];
 
     constructor(players: Players) {
         this.players = players
+        this.fightHistory = []
     }
 
-    public start(): BaseFighter {
+    public start(): FightSummary {
 
-        let matchWinner = undefined;
-        while(!matchWinner) {
-            matchWinner = this.tick();
+        let fightWinner = undefined;
+
+        while(!fightWinner) {
+            const {winner, hits} = this.tick();
+            fightWinner = winner;
+            this.fightHistory.push(...hits)
         }
 
-        return matchWinner;
+        return {
+            winner: fightWinner,
+            fightHistory: this.fightHistory
+        }
     }
 
-    public tick(): BaseFighter | undefined {
+    public tick(): FightStepOutcome {
         const attackMoves: FightMove[] = this.players[this.currentPlayer].attack()
 
         const attacker = this.players[this.currentPlayer];
         const defender = this.getDefendingFighter()
         
-        const hits = attackMoves.map((move) => {
-            console.info(`[${move.source.name}] Used ${move.name} with ${move.power} power`)
-            const defence = defender.defend(move)
-            console.info(`[${defence.defender.name}] Took ${defence.power} damage | HP: ${defence.defender.getCurrentHP()}`)
-        })
+        const hits = attackMoves.map((move) => ({
+            attack: move,
+            defence: defender.defend(move)
+        }))
 
 
-        if(defender.isDead()) return attacker;
+        if(defender.isDead()) return {
+            winner: attacker,
+            hits
+        }
 
         this.currentPlayer = this.getDefendingPlayer()
         
-        return undefined;
+        return {
+            winner: undefined,
+            hits
+        };
     }
 
     private getDefendingFighter(): BaseFighter {
@@ -62,6 +90,12 @@ class Fight implements IFight {
         return ((this.currentPlayer + 1) % 2) as PlayerId
     }
 
+    public print() {
+        this.fightHistory.forEach(({attack, defence}) => {
+            console.info(`[${attack.source.name}] Used ${attack.name} with ${attack.power} power`)
+            console.info(`[${defence.defender.name}] Took ${defence.power} damage | HP: ${defence.defender.getCurrentHP()}`)
+        })
+    }
 }
 
 export class FightController {
