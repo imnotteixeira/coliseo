@@ -1,14 +1,9 @@
 import { FightMove, FightMoveFactory } from "../../base/FightMove";
 import { BaseFighter } from "../../base/Fighter";
 
-class BiteImpl implements FightMove {
-    public name = "Bite"
-    public source;
-    public power;
-
+class BiteImpl extends FightMove {
     public constructor(source: BaseFighter) {
-        this.power = source.getStats().attack * 1.3;
-        this.source = source;
+        super("Bite", source.getStats().attack * 1.3, source)
     }
 }
 

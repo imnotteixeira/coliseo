@@ -1,5 +1,5 @@
-import { BaseFighter, Defence } from "../model/base/Fighter";
-import { FightMove } from "../model/base/FightMove";
+import { BaseFighter, IDefence, ISerializableDefence } from "../model/base/Fighter";
+import { FightMove, IFightMove, ISerializableFightMove } from "../model/base/FightMove";
 
 export type Players = {
     0: BaseFighter
@@ -17,17 +17,41 @@ interface IFight {
 
 export type FightSummary = {
     winner: BaseFighter,
-    fightHistory: FightMoveTrade[]
+    fightHistory: ISerializableFightMoveTrade[]
 }
 
 type FightStepOutcome = {
     winner: BaseFighter | undefined,
-    hits: FightMoveTrade[]
+    hits: IFightMoveTrade[]
 }
 
-type FightMoveTrade = {
-    attack: FightMove,
-    defence: Defence
+interface IFightMoveTrade {
+    attack: IFightMove,
+    defence: IDefence,
+    serialize: () => ISerializableFightMoveTrade
+}
+
+type ISerializableFightMoveTrade = {
+    attack: ISerializableFightMove,
+    defence: ISerializableDefence
+}
+
+class FightMoveTrade implements IFightMoveTrade {
+    
+    public attack: FightMove;
+    public defence: IDefence;
+
+    constructor(attack: FightMove, defence: IDefence) {
+        this.attack = attack;
+        this.defence = defence;
+    }
+
+    public serialize(): ISerializableFightMoveTrade {
+        return {
+            attack: this.attack.serialize(),
+            defence: this.defence.serialize()
+        }
+    }
 }
 
 class Fight implements IFight {
@@ -53,20 +77,22 @@ class Fight implements IFight {
 
         return {
             winner: fightWinner,
-            fightHistory: this.fightHistory
+            fightHistory: this.fightHistory.map(trade => trade.serialize())
         }
     }
 
     public tick(): FightStepOutcome {
-        const attackMoves: FightMove[] = this.players[this.currentPlayer].attack()
+        const attackMoves: IFightMove[] = this.players[this.currentPlayer].attack()
 
         const attacker = this.players[this.currentPlayer];
         const defender = this.getDefendingFighter()
         
-        const hits = attackMoves.map((move) => ({
-            attack: move,
-            defence: defender.defend(move)
-        }))
+        const hits: IFightMoveTrade[] = attackMoves.map((move) => 
+            new FightMoveTrade(
+                move,
+                defender.defend(move)
+            )
+        );
 
 
         if(defender.isDead()) return {

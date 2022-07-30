@@ -1,14 +1,9 @@
-import { FightMove, FightMoveFactory } from "../../base/FightMove";
+import { FightMoveFactory, FightMove } from "../../base/FightMove";
 import { BaseFighter } from "../../base/Fighter";
 
-class PunchImpl implements FightMove {
-    public name = "Punch"
-    public source;
-    public power;
-
+class PunchImpl extends FightMove {
     public constructor(source: BaseFighter) {
-        this.power = source.getStats().attack;
-        this.source = source;
+        super("Punch", source.getStats().attack, source)
     }
 }
 

@@ -10,9 +10,38 @@ export type FighterState = {
     health: number
 }
 
-export type Defence = {
+export interface IDefence {
     defender: BaseFighter,
+    power: number,
+    serialize: () => ISerializableDefence
+}
+
+export interface ISerializableDefence {
+    defender: SerializableBaseFighter,
     power: number
+}
+
+class Defence implements IDefence {
+    defender: BaseFighter;
+    power: number;
+
+    constructor(defender: BaseFighter, power: number) {
+        this.defender = defender;
+        this.power = power
+    }
+
+    public serialize(): ISerializableDefence {
+        return {
+            defender: this.defender.serialize(),
+            power: this.power
+        }
+    }
+}
+
+export type SerializableBaseFighter = {
+    name: string,
+    stats: FighterStats
+    state: FighterState
 }
 
 export abstract class BaseFighter {
@@ -55,16 +84,16 @@ export abstract class BaseFighter {
     }
 
     /** DO NOT OVERRIDE defend(), OVERRIDE calculateRealHitPowerOnDefence() INSTEAD */
-    public defend(move: FightMove): Defence {
+    public defend(move: FightMove): IDefence {
         const realPower = this.calculateRealHitPowerOnDefence(move)  
         this.setState({health: this.state.health - realPower})
         
-        return {
+        return new Defence(
             // TODO: If/When companions defend, this should return the companion instead
             // Also, this method could return Defence[] instead, for when both targets sustain damage (multiple "defences" happen)
-            defender: this, 
-            power: realPower
-        };
+            this, 
+            realPower
+        );
     }
 
     private setState(newState: Partial<FighterState>) {
@@ -73,6 +102,14 @@ export abstract class BaseFighter {
 
     public isDead(): boolean {
         return this.state.health <= 0
+    }
+
+    public serialize(): SerializableBaseFighter {
+        return {
+            name: this.name,
+            stats: this.stats,
+            state: this.state
+        }
     }
 }
 
