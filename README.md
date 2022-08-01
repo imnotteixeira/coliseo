@@ -73,6 +73,6 @@ Finally, for this bot to be able to push to the repository, a Github Authenticat
 
 ### npm
 
-For publishing, an organization was created called `coliseo`. The package is published under this scope (@coliseo/engine) and for that, there is a publish access token used by semantic-release to have permission to publish the package.
+For publishing, an organization called `coliseo` was created. The package is published under this scope (@coliseo/engine) and for that, there is a publish access token used by semantic-release to have permission to publish the package.
 
-In case something stops working, make sure there is an account belonging to the niaefeup organization, which must generate an access token for publishing. That token must be stored as a Github Secret on this repository with the name `NPM_TOKEN`. (For additional instructions, check the semantic-release docs, specially [this](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/getting-started.md#getting-started)).
+In case something stops working, make sure there is an valid access token for publishing (with permissions on coliseo org). That token must be stored as a Github Secret on this repository with the name `NPM_TOKEN`. (For additional instructions, check the semantic-release docs, specially [this](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/getting-started.md#getting-started)).

@@ -5,7 +5,8 @@
     },
     "version": "1.0.0",
     "description": "1v1 randomized fight game",
-    "main": "dist/index.js",
+    "main": "dist/index",
+    "typings": "dist/index",
     "scripts": {
         "start": "ts-node ./src/index.ts",
         "build": "tsc",
