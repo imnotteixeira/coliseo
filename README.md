@@ -46,7 +46,7 @@ First, you need to go to the folder of this package and run `npm link`. This wil
 
 Then, for each package you want to be automatically updated with local changes, you must go to its folder, and run `npm link @coliseo/engine`. Every time you run `npm install/uninstall` the link will be broken, and you must re-link the packages.
 
-Keep in mind that this won't probably work correctly when using Docker, since the node_modules folder is not mounted inside the container, therefore this symlink workaround won't work as expected. If you find this blocking your workflow, you can modify the `docker-compose.yml` of the dependent packages (backend or frontend) to mount the `node_modules` folder in a volume only for development.
+Keep in mind that this won't work correctly when using Docker, since the node_modules folder is not mounted inside the container, therefore this symlink workaround won't work as expected. In order to use Docker/Docker Compose for the local development workflow (with local overrides!), follow the instructions in [coliseo-development-workspace-setup](https://github.com/imnotteixeira/coliseo-development-workspace-setup)
 
 ## Continuous Deployment (CD)
 This package will automatically publish new versions to npm whenever there's a push to `main`. (Will also be triggered on PRs, since there is a merge commit pushed to `main`)
